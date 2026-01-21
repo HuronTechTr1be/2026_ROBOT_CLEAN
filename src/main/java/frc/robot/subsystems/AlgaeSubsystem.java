@@ -11,8 +11,8 @@ public class AlgaeSubsystem extends SubsystemBase {
     private SparkMax algae;
 
     public AlgaeSubsystem(int deviceId) {
-
-      //Dino  algae = new SparkMax(deviceId, MotorType.kBrushless);
+     //Dino 61 (we think)
+      algae = new SparkMax(deviceId, MotorType.kBrushless);
 
     }
 
