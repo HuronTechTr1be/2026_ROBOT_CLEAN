@@ -19,7 +19,7 @@ public class ClimbPivotSubsystem {
     public ClimbPivotSubsystem(int deviceId, String climbSide) {
 
        //Dino m_climb = new SparkMax(deviceId, MotorType.kBrushless);
-        m_RelativeEncoder = m_climb.getEncoder();
+       //m_RelativeEncoder = m_climb.getEncoder();
         m_LimitSwitch = m_climb.getForwardLimitSwitch();
 
         m_climbSide = climbSide;
