@@ -148,8 +148,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      *
      * @param drivetrainConstants     Drivetrain-wide constants for the swerve drive
      * @param odometryUpdateFrequency The frequency to run the odometry loop. If
-     *                                unspecified or set to 0 Hz, this is 250 Hz on
-     *                                CAN FD, and 100 Hz on CAN 2.0.
+     * unspecified or set to 0 Hz, this is 250 Hz on
+     * CAN FD, and 100 Hz on CAN 2.0.
      * @param modules                 Constants for each specific module
      */
     public CommandSwerveDrivetrain(
@@ -174,21 +174,21 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      * getters in the classes.
      *
      * @param drivetrainConstants       Drivetrain-wide constants for the swerve
-     *                                  drive
+     * drive
      * @param odometryUpdateFrequency   The frequency to run the odometry loop. If
-     *                                  unspecified or set to 0 Hz, this is 250 Hz
-     *                                  on
-     *                                  CAN FD, and 100 Hz on CAN 2.0.
+     * unspecified or set to 0 Hz, this is 250 Hz
+     * on
+     * CAN FD, and 100 Hz on CAN 2.0.
      * @param odometryStandardDeviation The standard deviation for odometry
-     *                                  calculation
-     *                                  in the form [x, y, theta]ᵀ, with units in
-     *                                  meters
-     *                                  and radians
+     * calculation
+     * in the form [x, y, theta]ᵀ, with units in
+     * meters
+     * and radians
      * @param visionStandardDeviation   The standard deviation for vision
-     *                                  calculation
-     *                                  in the form [x, y, theta]ᵀ, with units in
-     *                                  meters
-     *                                  and radians
+     * calculation
+     * in the form [x, y, theta]ᵀ, with units in
+     * meters
+     * and radians
      * @param modules                   Constants for each specific module
      */
     public CommandSwerveDrivetrain(
@@ -206,7 +206,22 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     }
 
-     private void configureAutoBuilder() {
+    // =========================================================================
+    //  HELPER METHOD TO FIX "seedFieldRelative" ERROR
+    // =========================================================================
+    /**
+     * Convenience method to seed the field-relative position to (0,0,0).
+     * This is what is called when you press the "Reset Gyro" button.
+     */
+    public void seedFieldRelative() {
+        // "seedFieldRelative" does not exist in the parent class.
+        // The standard method is "resetPose".
+        // Passing a new Pose2d() sets X=0, Y=0, and Rotation=0.
+        this.resetPose(new Pose2d());
+    }
+    // =========================================================================
+
+    private void configureAutoBuilder() {
         try {
             var config = RobotConfig.fromGUISettings();
             AutoBuilder.configure(
@@ -314,9 +329,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      * while still accounting for measurement noise.
      *
      * @param visionRobotPoseMeters The pose of the robot as measured by the vision
-     *                              camera.
+     * camera.
      * @param timestampSeconds      The timestamp of the vision measurement in
-     *                              seconds.
+     * seconds.
      */
     @Override
     public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds) {
@@ -333,13 +348,13 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      * {@link #setVisionMeasurementStdDevs(Matrix)} or this method.
      *
      * @param visionRobotPoseMeters    The pose of the robot as measured by the
-     *                                 vision camera.
+     * vision camera.
      * @param timestampSeconds         The timestamp of the vision measurement in
-     *                                 seconds.
+     * seconds.
      * @param visionMeasurementStdDevs Standard deviations of the vision pose
-     *                                 measurement
-     *                                 in the form [x, y, theta]ᵀ, with units in
-     *                                 meters and radians.
+     * measurement
+     * in the form [x, y, theta]ᵀ, with units in
+     * meters and radians.
      */
     @Override
     public void addVisionMeasurement(
