@@ -68,7 +68,7 @@ public class RobotContainer {
         m_operatorController.rightBumper().whileTrue(m_intake.runIntakeCommand(0.7, 0.4));
 
         // Shooter (Left Trigger)
-        m_operatorController.leftTrigger().whileTrue(m_shooter.runShooterCommand(-1.0, -0.6, .5));
+        m_operatorController.leftTrigger().whileTrue(m_shooter.runShooterCommand(-.7, -0.8, .7));
     }
 
     public Command getAutonomousCommand() {
