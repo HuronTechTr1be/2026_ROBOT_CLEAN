@@ -15,7 +15,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotPeriodic() {
-    CommandScheduler.getInstance().run();
+    // This runs the "periodic()" method of all subsystems automatically
+    CommandScheduler.getInstance().run(); 
   }
 
   @Override
@@ -24,8 +25,9 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+
     if (m_autonomousCommand != null) {
-      CommandScheduler.getInstance().schedule(m_autonomousCommand);
+      m_autonomousCommand.schedule();
     }
   }
 
@@ -38,4 +40,9 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {}
+
+  @Override
+  public void testInit() {
+    CommandScheduler.getInstance().cancelAll();
+  }
 }
