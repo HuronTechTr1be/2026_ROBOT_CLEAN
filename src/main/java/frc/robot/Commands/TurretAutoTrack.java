@@ -23,11 +23,12 @@ public class TurretAutoTrack extends Command {
     @Override
     public void execute() {
         // 1. Check if Limelight sees a tag
-        if (m_vision.hasTarget()) {
-            
+        //if (m_vision.hasTarget()) {
             // 2. Get the error (tx)
             double tx = m_vision.getTX();
-            
+            double tz = m_vision.getDistanceToTarget();
+            System.out.println("Target Aquired " + tx);        //JNL 02/11/2026 
+            System.out.println("Distance" + tz);        //JNL 02/11/2026 
             // 3. Calculate speed
             // NOTE: You might need to change this to "-tx" if it turns the wrong way!
             double speed = tx * kP; 
@@ -35,10 +36,10 @@ public class TurretAutoTrack extends Command {
             // 4. Move the turret
             m_turret.runManual(speed);
             
-        } else {
+        //} else {
             // No target? Stop moving.
-            m_turret.runManual(0);
-        }
+          //  m_turret.runManual(0);
+        //}
     }
 
     @Override

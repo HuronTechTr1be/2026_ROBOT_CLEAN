@@ -1,27 +1,35 @@
 package frc.robot.subsystems;
 
+// WPILib Imports
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+// Robot Imports
 import frc.robot.LimelightHelpers;
-import frc.robot.generated.TunerConstants; // Import your swerve constants
 
 public class VisionSubsystem extends SubsystemBase {
 
-    // 1. CONFIGURATION
+    // =========================================================================
+    //  1. CONFIGURATION
+    // =========================================================================
     private final String kLimelightName = "limelight"; // Must match your Limelight's name in the web UI
     private final CommandSwerveDrivetrain m_drivetrain;
+    
+    // Kill Switch Flag
+    private boolean m_isEnabled = true;
 
     // Trust Metrics (Standard Deviations)
     // Low numbers = High Trust. High numbers = Low Trust.
     // [x, y, theta] in meters and radians
-    private static final double kTrustHigh = 0.1;  // Very trustworthy (close, multiple tags)
+    private static final double kTrustHigh = 0.1;   // Very trustworthy (close, multiple tags)
     private static final double kTrustMedium = 0.9; // Okay (mid-range, single tag)
-    private static final double kTrustLow = 6.0;   // Do not trust (far away, high ambiguity)
+    private static final double kTrustLow = 6.0;    // Do not trust (far away, high ambiguity)
 
+    // =========================================================================
+    //  2. CONSTRUCTOR
+    // =========================================================================
     public VisionSubsystem(CommandSwerveDrivetrain drivetrain) {
         this.m_drivetrain = drivetrain;
 
@@ -29,18 +37,46 @@ public class VisionSubsystem extends SubsystemBase {
         LimelightHelpers.setLEDMode_ForceOff(kLimelightName);
     }
 
-    /**
-     * This method runs automatically every 20ms (loop).
-     * It pulls data from the camera and feeds it to the Drivetrain.
-     */
+    // =========================================================================
+    //  3. PERIODIC LOOP (Runs every 20ms)
+    // =========================================================================
     @Override
     public void periodic() {
-        // 1. Get the latest Pose Estimate from LimelightHelpers
-        // We use "botpose_orb_wpiblue" for MegaTag 2 (more stable) in Blue Alliance coordinates
+        
+        // 0. CHECK KILL SWITCH
+        if (!m_isEnabled) return;
+
+        // 1. SYNC GYRO (MegaTag 2 Fix)
+        // We tell Limelight our precise rotation so it doesn't have to guess.
+        // Note: Make sure CommandSwerveDrivetrain has a getHeadingDegrees() method!
+        try {
+            // If getHeadingDegrees() doesn't exist, use getPigeon2().getAngle()
+           double robotHeading = m_drivetrain.getPigeon2().getYaw().getValueAsDouble(); 
+            
+            LimelightHelpers.SetRobotOrientation(
+                kLimelightName, 
+                robotHeading, 
+                0, 0, 0, 0, 0 // We only care about Yaw (heading) for field positioning
+            );
+        } catch (Exception e) {
+            // If drivetrain isn't ready, skip orientation update
+        }
+
+        // 2. CHECK SPIN RATE
+        // Vision data lags behind reality. If we are spinning fast, that lag 
+        // causes massive errors. We reject vision if spinning > 720 deg/sec.
+        // (Assuming your drivetrain has this method, otherwise verify name)
+        try {
+             if (Math.abs(m_drivetrain.getState().Speeds.omegaRadiansPerSecond) > 4.0) { // ~230 deg/sec
+                return; // Too fast! Ignore vision frame.
+            }
+        } catch (Exception e) {}
+
+        // 3. GET POSE ESTIMATE
+        // We use "botpose_orb_wpiblue" for MegaTag 2 (more stable)
         LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue(kLimelightName);
 
-        // 2. VALIDATION CHECKS
-        
+        // 4. VALIDATION CHECKS
         // A. Did we see any tags?
         if (mt2.tagCount == 0) {
             return; // No tags seen, abort.
@@ -51,18 +87,7 @@ public class VisionSubsystem extends SubsystemBase {
             return; 
         }
 
-        // C. Is the robot spinning too fast? 
-        // Vision lags behind reality. If we are spinning fast, that lag causes massive errors.
-        // We reject vision updates if angular velocity is > 720 deg/sec (2 rotations/sec)
-        // (You can tune this threshold)
-        /* // Requires access to gyro rate. Uncomment if your Drivetrain exposes getGyroRate()
-        if (Math.abs(m_drivetrain.getPigeon2().getRate()) > 720) {
-            return;
-        }
-        */
-
-        // D. Calculate Confidence (Standard Deviation)
-        // If we are far away or have few tags, we trust the vision less.
+        // 5. CALCULATE CONFIDENCE (Standard Deviation)
         double xyStds = kTrustMedium;
         double degStds = kTrustMedium;
 
@@ -77,8 +102,7 @@ public class VisionSubsystem extends SubsystemBase {
             degStds = kTrustLow;
         }
 
-        // 3. SEND TO DRIVETRAIN
-        // We pass the Pose, the Timestamp (latency compensated), and our calculated Trust
+        // 6. SEND TO DRIVETRAIN
         try {
             m_drivetrain.addVisionMeasurement(
                 mt2.pose, 
@@ -95,21 +119,30 @@ public class VisionSubsystem extends SubsystemBase {
         }
     }
 
-    // --- Helper Methods for Commands ---
+    // =========================================================================
+    //  4. HELPER METHODS (These fix the red lines in other files)
+    // =========================================================================
 
     /**
-     * Checks if the Limelight currently sees a valid target (any tag or object).
+     * Helper to get the horizontal offset from the Limelight.
+     * @return tx value (degrees)
      */
-    public boolean hasTarget() {
-        return LimelightHelpers.getTV(kLimelightName);
+    public double getTx() {
+        return LimelightHelpers.getTX(kLimelightName);
+    }
+    
+    // Capitalized version for compatibility
+    public double getTX() {
+        return LimelightHelpers.getTX(kLimelightName);
     }
 
     /**
-     * Gets the horizontal offset (tx) to the target.
-     * Useful for aiming turrets or the whole robot.
+     * Helper to check if the Limelight sees a tag.
+     * @return true if tag is visible
      */
-    public double getTX() {
-        return LimelightHelpers.getTX(kLimelightName);
+    public boolean hasTarget() {
+        //return LimelightHelpers.getTV(kLimelightName); 
+        return LimelightHelpers.getTV(kLimelightName); 
     }
 
     /**
@@ -118,5 +151,38 @@ public class VisionSubsystem extends SubsystemBase {
      */
     public double getTY() {
         return LimelightHelpers.getTY(kLimelightName);
+    }  
+
+    /**
+     * Disables vision updates safely. 
+     * Call this from a button binding if vision goes crazy during a match.
+     */
+    public void disableVisionUpdates() {
+        m_isEnabled = false;
+        System.out.println("WARNING: VISION DISABLED BY DRIVER");
+    }
+
+    /**
+     * Gets the distance to the target.
+     * JNL 02/11/2026 
+     */
+    public double getDistanceToTarget() {
+        // 1. Get vertical angle offset from Limelight
+        double targetOffsetAngle_Vertical = LimelightHelpers.getTY(kLimelightName);
+
+        // 2. Define your robot's constants (UPDATE THESE WITH REAL MEASUREMENTS!)
+        final double LIMELIGHT_MOUNT_ANGLE_DEGREES = 25.0; // Your camera's pitch
+        final double LIMELIGHT_LENS_HEIGHT_INCHES = 20.0; // Your camera's height
+        final double GOAL_HEIGHT_INCHES = 60.0; // The target's height (e.g. Reef or Source)
+
+        // 3. Calculate the total angle to the goal
+        double angleToGoalDegrees = LIMELIGHT_MOUNT_ANGLE_DEGREES + targetOffsetAngle_Vertical;
+        double angleToGoalRadians = Math.toRadians(angleToGoalDegrees);
+
+        // 4. Calculate the distance using trigonometry (tangent)
+        // Distance = Height Difference / tan(Total Angle)
+        double distanceFromLimelightToGoalInches = (GOAL_HEIGHT_INCHES - LIMELIGHT_LENS_HEIGHT_INCHES) / Math.tan(angleToGoalRadians);
+
+        return distanceFromLimelightToGoalInches;
     }
 }

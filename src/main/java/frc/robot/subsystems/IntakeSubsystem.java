@@ -10,7 +10,7 @@ import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 
 public class IntakeSubsystem extends SubsystemBase {
-    // Define the two motors. REPLACE 90 and 91 with your actual CAN IDs.
+    // Define the two motors. REPLACE 90 and 91 with your actual CAN IDs.  DONE
     private final SparkMax m_frontRoller = new SparkMax(10, MotorType.kBrushless);
     private final SparkMax m_backRoller = new SparkMax(11, MotorType.kBrushless);
 

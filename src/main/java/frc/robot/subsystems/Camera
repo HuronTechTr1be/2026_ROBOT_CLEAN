@@ -1,0 +1,39 @@
+import org.bytedeco.javacv.*;
+import org.bytedeco.opencv.opencv_core.Mat;
+import javax.swing.JFrame;
+
+public class CameraApp {
+    public static void main(String[] args) throws Exception {
+        // 0 is the default camera index. Use 1 if you have a built-in webcam.
+        FrameGrabber grabber = new OpenCVFrameGrabber(0);
+        
+        // Setting HD Resolution
+        grabber.setImageWidth(1280);
+        grabber.setImageHeight(720);
+        
+        grabber.start();
+
+        // CanvasFrame is a JavaCV utility to display the video window
+        CanvasFrame canvas = new CanvasFrame("Microsoft HD Camera", CanvasFrame.getDefaultGamma() / grabber.getGamma());
+        canvas.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        OpenCVFrameConverter.ToMat converter = new OpenCVFrameConverter.ToMat();
+
+        while (canvas.isVisible()) {
+            Frame frame = grabber.grab();
+            if (frame == null) break;
+            
+            // If you need to process the image, convert it to a Mat
+            Mat image = converter.convert(frame);
+            
+            // Show the frame
+            canvas.showImage(frame);
+        }
+
+        grabber.stop();
+        canvas.dispose();
+    }
+}
+UsbCamera camera = CameraServer.startAutomaticCapture();
+camera.setResolution(320, 240);
+camera.setFPS(15);

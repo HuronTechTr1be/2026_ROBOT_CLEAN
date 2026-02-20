@@ -32,6 +32,7 @@ public class ShooterSubsystem extends SubsystemBase {
      * Speed range is -1.0 to 1.0.
      */
     public Command runShooterCommand(double speed20, double speed21, double speed22) {
+        System.out.println("runShooterCommand");        //JNL 02/11/2026 comment in message window 
         return this.startEnd(
             () -> {
                 m_motor20.set(speed20);

@@ -13,10 +13,20 @@ public class Robot extends TimedRobot {
     m_robotContainer = new RobotContainer();
   }
 
+  /**
+   * This function is called every 20 ms, no matter the mode.
+   * Use this for items like diagnostics that you want ran during disabled,
+   * autonomous, teleoperated and test.
+   */
   @Override
   public void robotPeriodic() {
-    // This runs the "periodic()" method of all subsystems automatically
+    // 1. Run the Scheduler (updates all Subsystems)
     CommandScheduler.getInstance().run(); 
+
+    // 2. Update the Dashboard (Field2d, etc.)
+    if (m_robotContainer != null) {
+        m_robotContainer.updateDashboard();
+    }
   }
 
   @Override
