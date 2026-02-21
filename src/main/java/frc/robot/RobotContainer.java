@@ -29,7 +29,11 @@ import frc.robot.subsystems.ShooterSubsystem;
 
 // Command Imports
 import frc.robot.Commands.AlignToTarget;
+import frc.robot.Commands.AutoTurretAlign;
 import frc.robot.Commands.TurretAutoTrack;
+
+// PathPlanner Named Commands
+import com.pathplanner.lib.auto.NamedCommands;
 
 //camera
 import edu.wpi.first.cameraserver.CameraServer;
@@ -77,7 +81,10 @@ public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrai
     public RobotContainer() {
         configureBindings();
 
-        // 1. Build the Auto Chooser
+        // 1. Register PathPlanner Named Commands (MUST be before buildAutoChooser)
+        NamedCommands.registerCommand("AlignTurretToTag", new AutoTurretAlign(m_turret, m_vision));
+
+        // 2. Build the Auto Chooser
         // This automatically reads every ".auto" file you made in the PathPlanner GUI
         autoChooser = AutoBuilder.buildAutoChooser();
 
