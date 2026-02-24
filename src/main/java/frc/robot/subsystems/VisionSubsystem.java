@@ -145,6 +145,13 @@ public class VisionSubsystem extends SubsystemBase {
         return LimelightHelpers.getTV(kLimelightName); 
     }
 
+       public boolean getTV() {
+        //return LimelightHelpers.getTV(kLimelightName); 
+        return LimelightHelpers.getTV(kLimelightName); 
+    }
+
+
+
     /**
      * Gets the vertical offset (ty) to the target.
      * Useful for calculating distance or shooter hood angle.
@@ -184,5 +191,10 @@ public class VisionSubsystem extends SubsystemBase {
         double distanceFromLimelightToGoalInches = (GOAL_HEIGHT_INCHES - LIMELIGHT_LENS_HEIGHT_INCHES) / Math.tan(angleToGoalRadians);
 
         return distanceFromLimelightToGoalInches;
+    }
+
+    public boolean getFiducialID(String string) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getFiducialID'");
     }
 }

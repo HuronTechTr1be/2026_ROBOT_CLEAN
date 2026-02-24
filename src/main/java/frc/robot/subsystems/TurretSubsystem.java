@@ -15,6 +15,7 @@ import com.revrobotics.spark.ClosedLoopSlot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class TurretSubsystem extends SubsystemBase {
+    public static final String GoToAngleCommand = null;
     // 1. Define Variables
     private final SparkMax m_motor32;
     private final RelativeEncoder m_encoder;
@@ -64,6 +65,7 @@ public class TurretSubsystem extends SubsystemBase {
      * Command to go to a specific angle.
      */
     public Command goToAngleCommand(double degrees) {
+         System.out.println("goToAngleCommand " + degrees);        //JNL 02/11/2026 
         return this.run(() -> setAngle(degrees));
     }
 
