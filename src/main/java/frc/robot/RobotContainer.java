@@ -29,7 +29,16 @@ import frc.robot.subsystems.ShooterSubsystem;
 
 // Command Imports
 import frc.robot.Commands.AlignToTarget;
+import frc.robot.Commands.AutoTurretAlign;
 import frc.robot.Commands.TurretAutoTrack;
+
+// PathPlanner Named Commands
+import com.pathplanner.lib.auto.NamedCommands;
+
+//camera
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.util.PixelFormat;
 
 public class RobotContainer {
 
@@ -63,17 +72,97 @@ public class RobotContainer {
 
     public RobotContainer() {
         configureBindings();
+
+        // 1. Register PathPlanner Named Commands (MUST be before buildAutoChooser)
+        NamedCommands.registerCommand("AlignTurretToTag", new AutoTurretAlign(m_turret, m_vision));
+
+        // 2. Build the Auto Chooser
+        // This automatically reads every ".auto" file you made in the PathPlanner GUI
         autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("Auto Mode", autoChooser);
         SmartDashboard.putData("Field", m_field);
     }
 
-    private void configureBindings() {
+    // =========================================================================
+    //  BINDINGS
+    // =========================================================================
+   private void configureBindings() {
+
+        // --- DRIVER CONTROLS ---
+
+        // Main Drive Command with Slow Mode on Right Trigger
+        drivetrain.setDefaultCommand(
+            drivetrain.applyRequest(() -> {
+                // If Right Trigger is pressed more than halfway (0.5), multiplier is 0.4
+                double multiplier = m_driverController.getRightTriggerAxis() > 0.5 ? 0.4 : 1.0;
+
+                return drive
+                    .withVelocityX(-m_driverController.getLeftY() * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) * multiplier)
+                    .withVelocityY(-m_driverController.getLeftX() * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) * multiplier)
+                    .withRotationalRate(-m_driverController.getRightX() * (1.5 * Math.PI) * multiplier);
+            })
+        );
+
+        // Vision Kill Switch (Back Button)
+        m_driverController.back().onTrue(
+            Commands.runOnce(() -> m_vision.disableVisionUpdates(), m_vision)
+        );
+
+        // Reset Gyro (Start Button)
+        m_driverController.start().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
+
+        // Auto-Align to Target (Hold 'A' button)
+        m_driverController.a().whileTrue(new AlignToTarget(drivetrain, m_vision));
+
+        // --- OPERATOR CONTROLS ---
+
+        // 1. TURRET CONTROLS
+        new Trigger(DriverStation::isEnabled).onTrue(m_turret.findHomeCommand());
+
+        m_operatorController.a().onTrue(m_turret.findHomeCommand());
+
+        m_operatorController.x().whileTrue(new TurretAutoTrack(m_turret, m_vision));
+
+        m_operatorController.povRight().onTrue(m_turret.goToAngleCommand(45));
+        m_operatorController.povLeft().onTrue(m_turret.goToAngleCommand(-45));
+        m_operatorController.povUp().onTrue(m_turret.goToAngleCommand(0));
+
+        // 2. INTAKE (Right Bumper)
+        m_operatorController.rightBumper().whileTrue(m_intake.runIntakeCommand(-0.8, -0.8));
+
+        // 3. SHOOTER (Left Trigger) 
+        m_operatorController.leftTrigger().whileTrue(m_shooter.runShooterCommand(-0.78, -.4, 0.78));
+    }
+   
+   
+   
+   
+   
+   
+    /*private void configureBindings() {
+
         // --- DRIVER CONTROLS ---
         drivetrain.setDefaultCommand(
             drivetrain.applyRequest(() ->
                 drive.withVelocityX(-m_driverController.getLeftY() * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond))
-                     .withVelocityY(-m_driverController.getLeftX() * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond))
+                  // Main Drive Command with Slow Mode on Right Trigger
+        drivetrain.setDefaultCommand(
+            drivetrain.applyRequest(() -> {
+                // If Right Trigger is pressed more than halfway (0.5), multiplier is 0.4
+                double multiplier = m_driverController.getRightTriggerAxis() > 0.5 ? 0.4 : 1.0;
+
+                return drive
+                    .withVelocityX(-m_driverController.getLeftY() * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) * multiplier)
+                    .withVelocityY(-m_driverController.getLeftX() * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) * multiplier)
+                    .withRotationalRate(-m_driverController.getRightX() * (1.5 * Math.PI) * multiplier);
+            })
+        );//;
+
+            );
+    };
+                
+                
+                 .withVelocityY(-m_driverController.getLeftX() * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond))
                      .withRotationalRate(-m_driverController.getRightX() * (1.5 * Math.PI)) 
             )
         );
@@ -96,19 +185,30 @@ public class RobotContainer {
         // Intake (Right Bumper)
         m_operatorController.rightBumper().whileTrue(m_intake.runIntakeCommand(-0.8, -0.8));
 
-        // SHOOTER + INTAKE (Left Trigger)
-        // This runs both at once!
-        m_operatorController.leftTrigger().whileTrue(
-            m_shooter.runShooterCommand(-0.78, -.4, 0.78)
-            .alongWith(m_intake.runIntakeCommand(-0.8, -0.8))
-        );
+        // 3. SHOOTER (Left Trigger) 
+        m_operatorController.leftTrigger().whileTrue(m_shooter.runShooterCommand(-0.78, -.4, 0.78));
     }
+    */
+
+    // =========================================================================
+    //  METHODS
+    // =========================================================================
 
     public Command getAutonomousCommand() {
         return autoChooser.getSelected();
     }
 
-    public void updateDashboard() {
-        m_field.setRobotPose(drivetrain.getState().Pose);
+    public CommandSwerveDrivetrain getDriveSubsystem() {
+        return drivetrain; 
     }
-}
+
+    /**
+     * Updates dashboard data. Call this from Robot.periodic()
+     */
+    //public void updateDashboard() {
+        // Update the Field2d widget with the robot's actual position
+        //m_field.setRobotPose(drivetrain.getState().Pose);
+        
+        // (Optional) Update vision debug values
+        // SmartDashboard.putNumber("Turret Angle", m_turret.getCurrentAngle());
+    }
