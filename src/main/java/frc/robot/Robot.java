@@ -3,9 +3,14 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.util.PixelFormat;
+
+  
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
@@ -14,6 +19,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     // 1. Initialize the RobotContainer
+   
     m_robotContainer = new RobotContainer();
 
     // 2. Start the USB Camera on port 0
@@ -33,10 +39,19 @@ public class Robot extends TimedRobot {
         // m_robotContainer.updateDashboard(); 
     }
   }
+@Override
+  public void autonomousInit() {
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
+    if (m_autonomousCommand != null) {
+      m_autonomousCommand.schedule();
+    }
+  }
   @Override
-  public void disabledInit() {}
-
+  public void disabledInit() {
+  } 
+}
+/* 
   @Override
   public void autonomousInit() {
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
@@ -63,6 +78,7 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().cancelAll();
   }
 }
+
 
 
 /*package frc.robot;
@@ -102,15 +118,6 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledInit() {}
-
-  @Override
-  public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.schedule();
-    }
-  }
 
   @Override
   public void teleopInit() {

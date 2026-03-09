@@ -5,7 +5,10 @@
   "pathFolders": [
     "1st_Blue",
     "2nd_Blue",
-    "3rd_Blue"
+    "3rd_Blue",
+    "1st_Red",
+    "2nd_Red",
+    "3rd_Red"
   ],
   "autoFolders": [
     "New Folder"

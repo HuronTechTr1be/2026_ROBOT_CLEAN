@@ -36,11 +36,11 @@ public class TurretSubsystem extends SubsystemBase {
         // 2. Configure Encoder
         config.encoder
             .positionConversionFactor(kDegreesPerRotation)
-            .velocityConversionFactor(kDegreesPerRotation / 60.0);
+            .velocityConversionFactor(kDegreesPerRotation / 3);  // / 60.0);
 
         // 3. Configure PID Gains
         config.closedLoop
-            .p(0.05) 
+            .p(0.18) //.p(0.05) //
             .i(0.0)
             .d(0.0)
             .outputRange(-0.4, 0.4); 

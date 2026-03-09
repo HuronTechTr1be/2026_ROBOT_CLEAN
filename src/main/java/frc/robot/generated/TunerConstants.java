@@ -51,19 +51,39 @@ public class TunerConstants {
 
     // The stator current at which the wheels start to slip;
     // This needs to be tuned to your individual robot
-    private static final Current kSlipCurrent = Amps.of(120);
+    private static final Current kSlipCurrent = Amps.of(40);
 
     // Initial configs for the drive and steer motors and the azimuth encoder; these cannot be null.
     // Some configs will be overwritten; check the `with*InitialConfigs()` API documentation.
-    private static final TalonFXConfiguration driveInitialConfigs = new TalonFXConfiguration();
+    private static final TalonFXConfiguration driveInitialConfigs = new TalonFXConfiguration()
+        .withCurrentLimits(
+            new CurrentLimitsConfigs()
+                // Stator limits stop huge torque spikes when the robot is at a standstill
+                .withStatorCurrentLimit(Amps.of(40))
+                .withStatorCurrentLimitEnable(true)
+                // Supply limits protect the battery from browning out
+                .withSupplyCurrentLimit(Amps.of(40))          // Max spike at 40A
+                .withSupplyCurrentLimitEnable(true)
+                .withSupplyCurrentLowerLimit(Amps.of(35))     // Drop down to a 35A continuous limit
+                .withSupplyCurrentLowerTime(Seconds.of(0.1))
+        )
+        // RAMP RATES: Prevents brownouts when the driver slams the joystick to 100% instantly
+        .withOpenLoopRamps(new OpenLoopRampsConfigs().withVoltageOpenLoopRampPeriod(0.4))
+        .withClosedLoopRamps(new ClosedLoopRampsConfigs().withVoltageClosedLoopRampPeriod(0.4));
+        
     private static final TalonFXConfiguration steerInitialConfigs = new TalonFXConfiguration()
         .withCurrentLimits(
             new CurrentLimitsConfigs()
-                // Swerve azimuth does not require much torque output, so we can set a relatively low
-                // stator current limit to help avoid brownouts without impacting performance.
-                .withStatorCurrentLimit(Amps.of(60))
+                // Swerve azimuth does not require much torque output
+                .withStatorCurrentLimit(Amps.of(40))
                 .withStatorCurrentLimitEnable(true)
+                // VERY IMPORTANT: Steer motors need supply limits too to stop brownouts during turns!
+                .withSupplyCurrentLimit(Amps.of(30))          // Max spike at 30A
+                .withSupplyCurrentLimitEnable(true)
+                .withSupplyCurrentLowerLimit(Amps.of(20))     // Drop down to 20A continuous
+                .withSupplyCurrentLowerTime(Seconds.of(0.1))
         );
+        
     private static final CANcoderConfiguration encoderInitialConfigs = new CANcoderConfiguration();
     // Configs for the Pigeon 2; leave this null to skip applying Pigeon 2 configs
     private static final Pigeon2Configuration pigeonConfigs = null;
@@ -235,8 +255,8 @@ public class TunerConstants {
          *
          * @param drivetrainConstants     Drivetrain-wide constants for the swerve drive
          * @param odometryUpdateFrequency The frequency to run the odometry loop. If
-         *                                unspecified or set to 0 Hz, this is 250 Hz on
-         *                                CAN FD, and 100 Hz on CAN 2.0.
+         * unspecified or set to 0 Hz, this is 250 Hz on
+         * CAN FD, and 100 Hz on CAN 2.0.
          * @param modules                 Constants for each specific module
          */
         public TunerSwerveDrivetrain(
@@ -259,14 +279,14 @@ public class TunerConstants {
          *
          * @param drivetrainConstants       Drivetrain-wide constants for the swerve drive
          * @param odometryUpdateFrequency   The frequency to run the odometry loop. If
-         *                                  unspecified or set to 0 Hz, this is 250 Hz on
-         *                                  CAN FD, and 100 Hz on CAN 2.0.
+         * unspecified or set to 0 Hz, this is 250 Hz on
+         * CAN FD, and 100 Hz on CAN 2.0.
          * @param odometryStandardDeviation The standard deviation for odometry calculation
-         *                                  in the form [x, y, theta]áµ€, with units in meters
-         *                                  and radians
+         * in the form [x, y, theta]ᵀ, with units in meters
+         * and radians
          * @param visionStandardDeviation   The standard deviation for vision calculation
-         *                                  in the form [x, y, theta]áµ€, with units in meters
-         *                                  and radians
+         * in the form [x, y, theta]ᵀ, with units in meters
+         * and radians
          * @param modules                   Constants for each specific module
          */
         public TunerSwerveDrivetrain(

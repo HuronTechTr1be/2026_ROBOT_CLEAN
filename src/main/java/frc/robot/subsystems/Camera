@@ -8,8 +8,8 @@ public class CameraApp {
         FrameGrabber grabber = new OpenCVFrameGrabber(0);
         
         // Setting HD Resolution
-        grabber.setImageWidth(1280);
-        grabber.setImageHeight(720);
+        grabber.setImageWidth(2280);
+        grabber.setImageHeight(1720);
         
         grabber.start();
 
