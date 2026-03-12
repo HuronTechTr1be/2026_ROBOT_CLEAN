@@ -31,6 +31,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
+// --- DASHBOARD IMPORTS ---
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import frc.robot.generated.TunerConstants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 
@@ -52,6 +56,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private boolean m_hasAppliedOperatorPerspective = false;
 
     private final SwerveRequest.ApplyRobotSpeeds autoRequest = new SwerveRequest.ApplyRobotSpeeds();
+
+    // Field2d Widget
+    private final Field2d m_field = new Field2d();
 
     // =========================================================================
     //  SYSID VARIABLES
@@ -113,12 +120,16 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     //  PATHPLANNER SETUP
     // =========================================================================
     public void configurePathPlanner() {
+        
+        // Push the Field to the dashboard
+        SmartDashboard.putData("Field", m_field);
+
         try {
             RobotConfig config = RobotConfig.fromGUISettings();
 
             AutoBuilder.configure(
                 this::getPose, 
-                this::resetPose, // This calls the method we added below!
+                this::resetPose, // Now correctly linked to the method below!
                 this::getRobotRelativeSpeeds, 
                 (ChassisSpeeds speeds, DriveFeedforwards feedforwards) -> {
                     this.setControl(autoRequest.withSpeeds(speeds));
@@ -151,7 +162,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return this.getState().Pose;
     }
 
-    
+    // Resets the robot's pose on the field (fixes the disabling issue!)
+
 
     public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
         return run(() -> this.setControl(requestSupplier.get()));
@@ -176,6 +188,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 m_hasAppliedOperatorPerspective = true;
             });
         }
+
+        // Continually update the dashboard widget with the robot's pose
+        m_field.setRobotPose(this.getPose());
     }
 
     private void startSimThread() {

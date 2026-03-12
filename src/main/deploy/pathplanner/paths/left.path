@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.3117333333333336,
-        "y": 4.0652333333333335
+        "x": 2.0,
+        "y": 7.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.769833333333334,
-        "y": -1.1046666666666667
+        "x": 2.0167701863354033,
+        "y": 6.622404614019521
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 8.0,
-        "y": 2.0
+        "x": 1.864,
+        "y": 5.823
       },
       "prevControl": {
-        "x": 8.22465,
-        "y": -0.06161666666666754
+        "x": 1.8719077196095824,
+        "y": 6.088581188997338
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,10 +42,10 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 88.20249813900814
+    "rotation": 67.4558503407553
   },
   "reversed": false,
-  "folder": "2nd_Blue",
+  "folder": "Pappas_Blue_Auto",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0

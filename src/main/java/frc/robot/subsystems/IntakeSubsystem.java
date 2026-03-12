@@ -35,7 +35,7 @@ public class IntakeSubsystem extends SubsystemBase {
             () -> {
                 m_frontRoller.set(frontSpeed);
                 m_backRoller.set(backSpeed);
-                m_Roller.set(-frontSpeed);
+                m_Roller.set(frontSpeed);
             }, 
             () -> {
                 m_frontRoller.set(0);

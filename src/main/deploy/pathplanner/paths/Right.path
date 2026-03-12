@@ -3,41 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 13.341641666666668,
-        "y": 4.050116666666667
+        "x": 2.0,
+        "y": 1.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 13.586279112913354,
-        "y": 3.998614046404206
+        "x": 2.248954723064147,
+        "y": 0.9771626213401415
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 13.092216666666667,
-        "y": 7.481599999999999
+        "x": 1.8638598047914816,
+        "y": 2.2765306122448976
       },
       "prevControl": {
-        "x": 13.341909876259304,
-        "y": 7.493981481467403
-      },
-      "nextControl": {
-        "x": 12.177658333333333,
-        "y": 7.43625
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 10.129349999999999,
-        "y": 7.25485
-      },
-      "prevControl": {
-        "x": 10.377156975170658,
-        "y": 7.221809069977246
+        "x": 1.602435433587496,
+        "y": 2.30768015960653
       },
       "nextControl": null,
       "isLocked": false,
@@ -47,7 +31,19 @@
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "intake",
+      "waypointRelativePos": 0.31208053691275156,
+      "endWaypointRelativePos": 1.0,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "intake"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
@@ -58,13 +54,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -178.43064519525106
+    "rotation": 112.4427533652944
   },
   "reversed": false,
-  "folder": "1st_Red",
+  "folder": "Pappas_Blue_Auto",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 177.76882539196882
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

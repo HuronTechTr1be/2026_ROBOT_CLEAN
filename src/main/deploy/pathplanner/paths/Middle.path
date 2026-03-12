@@ -4,24 +4,24 @@
     {
       "anchor": {
         "x": 2.0,
-        "y": 1.0
+        "y": 4.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.1911448728912624,
-        "y": 1.1611323603978516
+        "x": 2.2475218736829254,
+        "y": 4.035112989740179
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.4,
+        "x": 2.0,
         "y": 4.0
       },
       "prevControl": {
-        "x": 3.2802928127772844,
-        "y": 3.7653948535936106
+        "x": 1.7526016057450025,
+        "y": 3.9640273086904965
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 89.28124512091799
+    "rotation": 89.0129409485184
   },
   "reversed": false,
-  "folder": "1st_Blue",
+  "folder": "Pappas_Blue_Auto",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -0.07721342751768015
   },
   "useDefaultConstraints": true
 }

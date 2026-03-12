@@ -82,13 +82,13 @@ public class RobotContainer {
         NamedCommands.registerCommand("AlignTurretToTag", new AutoTurretAlign(m_turret, m_vision));
 
         // "Leaving To Collect" - Placeholder print command so PathPlanner doesn't crash
-        NamedCommands.registerCommand("Leaving To Collect", Commands.print("Leaving to collect...")); 
+        NamedCommands.registerCommand("print message", Commands.print("print message...")); 
 
         // "Collection" - Runs the intake for 2 seconds, then finishes so the next path can start
-        NamedCommands.registerCommand("Collection", m_intake.runIntakeCommand(-0.9, -0.9).withTimeout(2.0)); 
+        NamedCommands.registerCommand("intake", m_intake.runIntakeCommand(-0.9, -0.9).withTimeout(5.0)); 
 
         // "Return" - Runs the shooter for 2 seconds to score, then finishes
-        NamedCommands.registerCommand("Return", m_shooter.runShooterRPMCommand(-2500, -.25, 2500).withTimeout(2.0));
+        NamedCommands.registerCommand("shoot", m_shooter.runShooterRPMCommand(-2450, -.25, 2450).withTimeout(5.0));
 
 
         // =========================================================================
@@ -149,7 +149,7 @@ public class RobotContainer {
         m_operatorController.leftBumper().whileTrue(m_intake.runIntakeCommand(0.9, 0.9));  
 
         // 3. SHOOTER (Left Trigger) 
-        m_operatorController.leftTrigger().whileTrue(m_shooter.runShooterRPMCommand(-2500, -.25, 2500));
+        m_operatorController.leftTrigger().whileTrue(m_shooter.runShooterRPMCommand(-2450, -.25, 2450));
         m_operatorController.leftTrigger().whileTrue(m_intake.runIntakeCommand(-.9, -.9));
     }
 
