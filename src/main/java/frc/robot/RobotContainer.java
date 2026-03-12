@@ -144,6 +144,7 @@ public class RobotContainer {
 
         // 2. INTAKE (Right Bumper)
         m_operatorController.rightBumper().whileTrue(m_intake.runIntakeCommand(-.9, -.9));
+
         // Reverse Intake (Left Bumper) - Outtakes the object
         m_operatorController.leftBumper().whileTrue(m_intake.runIntakeCommand(0.9, 0.9));  
 
