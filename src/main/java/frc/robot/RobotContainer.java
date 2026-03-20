@@ -144,6 +144,10 @@ public class RobotContainer {
         m_driverController.leftBumper().whileTrue(m_pivot.lowerCommand());
         m_driverController.rightBumper().whileTrue(m_pivot.raiseCommand());
 
+        // 6. PIVOT POSITION (Operator A = down, Y = up) — hold to move, release to hold
+        m_operatorController.a().whileTrue(m_pivot.goDownCommand());
+        m_operatorController.y().whileTrue(m_pivot.goUpCommand());
+
         // 2. INTAKE BARS SPEED (Operator B = fast, X = slow)
         m_operatorController.b().whileTrue(m_intakeBars.runFastCommand());
         m_operatorController.x().whileTrue(m_intakeBars.runSlowCommand());
