@@ -1,63 +1,71 @@
-package frc.robot.subsystems;
+/*package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.Commands; // Added for simplified command composition
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.SparkLimitSwitch;
-import com.revrobotics.spark.SparkClosedLoopController;
-import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.spark.SparkBase.ControlType;
-import com.revrobotics.spark.SparkBase.PersistMode;
-import com.revrobotics.spark.SparkBase.ResetMode;
-import com.revrobotics.spark.ClosedLoopSlot;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.PositionDutyCycle;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.ReverseLimitValue;
 
 public class TurretSubsystem extends SubsystemBase {
-    private final SparkMax m_motor32;
-    private final RelativeEncoder m_encoder;
-    private final SparkClosedLoopController m_pidController;
-    private final SparkLimitSwitch m_limitSwitch;
+    private final TalonFX m_motor32; // CAN ID 32 preserved
 
-    private final double kDegreesPerRotation = 360.0 / (4.0 * 6.5);
+    // Original: kDegreesPerRotation = 360.0 / (4.0 * 6.5)
+    // Gear ratio: 4.0 * 6.5 = 26 motor rotations per mechanism rotation.
+    // With SensorToMechanismRatio = 26, position.getValueAsDouble() is in mechanism rotations.
+    // Degrees = mechanism_rotations * 360.0
+    private static final double kGearRatio = 4.0 * 6.5; // 26
+
+    private final DutyCycleOut    m_dutyCycleRequest = new DutyCycleOut(0);
+    private final PositionDutyCycle m_positionRequest = new PositionDutyCycle(0);
 
     public TurretSubsystem() {
-        m_motor32 = new SparkMax(32, MotorType.kBrushless);
-        m_encoder = m_motor32.getEncoder();
-        m_pidController = m_motor32.getClosedLoopController();
-        
-        // This is the REVERSE limit switch
-        m_limitSwitch = m_motor32.getReverseLimitSwitch();
+        m_motor32 = new TalonFX(32);
 
-        SparkMaxConfig config = new SparkMaxConfig();
+        TalonFXConfiguration config = new TalonFXConfiguration();
+        config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
-        config.encoder
-            .positionConversionFactor(kDegreesPerRotation)
-            .velocityConversionFactor(kDegreesPerRotation / 60.0);
+        // Gear ratio: position signal will be in mechanism rotations
+        config.Feedback.SensorToMechanismRatio = kGearRatio;
 
-        config.closedLoop
-            .p(0.18)
-            .i(0.0)
-            .d(0.0)
-            .outputRange(-0.4, 0.4); 
+        // NOTE: Original kP = 0.18/degree. Converted to per-rotation: 0.18 * 360 = 64.8.
+        // Re-tune for Kraken X60 on actual hardware.
+        config.Slot0.kP = 64.8;
+        config.Slot0.kI = 0.0;
+        config.Slot0.kD = 0.0;
 
-        config.limitSwitch
-            .forwardLimitSwitchEnabled(false)
-            .reverseLimitSwitchEnabled(true); // Hardware will stop motor at negative speeds
+        // Output limits mirror the original -0.4 to 0.4 range
+        config.MotorOutput.PeakForwardDutyCycle =  0.4;
+        config.MotorOutput.PeakReverseDutyCycle = -0.4;
 
-        config.softLimit
-            .forwardSoftLimit(170)
-            .forwardSoftLimitEnabled(true)
-            .reverseSoftLimit(-170)
-            .reverseSoftLimitEnabled(true);
+        // Soft limits in mechanism rotations (original: ±170 degrees -> ±170/360 rotations)
+        config.SoftwareLimitSwitch.ForwardSoftLimitThreshold =  170.0 / 360.0;
+        config.SoftwareLimitSwitch.ForwardSoftLimitEnable    = true;
+        config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = -170.0 / 360.0;
+        config.SoftwareLimitSwitch.ReverseSoftLimitEnable    = true;
 
-        m_motor32.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        // Reverse hardware limit switch for homing (stops motor in reverse direction when triggered)
+        config.HardwareLimitSwitch.ReverseLimitEnable = true;
+
+        m_motor32.getConfigurator().apply(config);
+    }
+
+     Returns true when the reverse (home) limit switch is triggered. 
+    private boolean isAtHome() {
+        return m_motor32.getReverseLimit().getValue() == ReverseLimitValue.ClosedToGround;
+    }
+
+     Returns the current turret angle in degrees. 
+    private double getAngleDegrees() {
+        return m_motor32.getPosition().getValueAsDouble() * 360.0;
     }
 
     public void setAngle(double degrees) {
-        m_pidController.setReference(degrees, ControlType.kPosition, ClosedLoopSlot.kSlot0);
+        m_motor32.setControl(m_positionRequest.withPosition(degrees / 360.0));
     }
 
     public Command goToAngleCommand(double degrees) {
@@ -65,42 +73,43 @@ public class TurretSubsystem extends SubsystemBase {
     }
 
     /**
-     * Improved Homing: 
+     * Improved Homing:
      * 1. Checks if already on switch. If so, reset and finish.
      * 2. If not, drive reverse (-0.05) until switch is hit.
      */
-    public Command findHomeCommand() {
+    /*public Command findHomeCommand() {
         return Commands.either(
             // If already pressed:
             this.runOnce(() -> {
-                m_encoder.setPosition(0);
+                m_motor32.setPosition(0.0);
                 System.out.println("Turret already home. Resetting encoder.");
             }),
             // If NOT pressed, run the movement sequence:
-            this.run(() -> m_motor32.set(-0.05)) // Negative speed for reverse switch
-                .until(() -> m_limitSwitch.isPressed())
+            this.run(() -> m_motor32.setControl(m_dutyCycleRequest.withOutput(-0.05)))
+                .until(this::isAtHome)
                 .finallyDo((interrupted) -> {
-                    m_motor32.set(0);
+                    m_motor32.setControl(m_dutyCycleRequest.withOutput(0));
                     if (!interrupted) {
-                        m_encoder.setPosition(0);
+                        m_motor32.setPosition(0.0);
                         System.out.println("Turret homing complete.");
                     }
                 }),
-            m_limitSwitch::isPressed
+            this::isAtHome
         );
     }
 
     public void runManual(double speed) {
-        m_motor32.set(speed); 
+        m_motor32.setControl(m_dutyCycleRequest.withOutput(speed));
     }
 
     public void stop() {
-        m_motor32.set(0);
+        m_motor32.setControl(m_dutyCycleRequest.withOutput(0));
     }
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Turret/Angle", m_encoder.getPosition());
-        SmartDashboard.putBoolean("Turret/Home", m_limitSwitch.isPressed());
+        SmartDashboard.putNumber("Turret/Angle",  getAngleDegrees());
+        SmartDashboard.putBoolean("Turret/Home",  isAtHome());
     }
 }
+*/

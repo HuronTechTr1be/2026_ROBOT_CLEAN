@@ -3,79 +3,78 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.864,
-        "y": 2.277
+        "x": 3.508573466476462,
+        "y": 0.6644793152639101
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.112243959255266,
-        "y": 2.2474206711829035
+        "x": 4.508573466476463,
+        "y": 0.6644793152639101
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.7571783496007094,
-        "y": 0.6106122448979578
+        "x": 7.545435092724677,
+        "y": 1.6736947218259637
       },
       "prevControl": {
-        "x": 1.8880035492457847,
-        "y": 0.8440017746228923
+        "x": 7.5076444475107635,
+        "y": 0.28803773064920235
       },
       "nextControl": {
-        "x": 3.206444311760349,
-        "y": 0.48997601431805426
+        "x": 7.584251069900143,
+        "y": 3.0969472182596305
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.974285714285714,
-        "y": 0.7876663708961837
+        "x": 6.885563480741797,
+        "y": 7.314950071326677
       },
       "prevControl": {
-        "x": 6.729624570706658,
-        "y": 0.6794508650823705
+        "x": 8.192368045649072,
+        "y": 7.314950071326677
       },
       "nextControl": {
-        "x": 7.811268855368235,
-        "y": 1.1578704525288368
+        "x": 6.2251846652928045,
+        "y": 7.314950071326677
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 7.7535587188612105,
-        "y": 3.6100118623962043
+        "x": 3.508573466476462,
+        "y": 7.41845934379458
       },
       "prevControl": {
-        "x": 7.916963686447733,
-        "y": 3.7992176143384944
+        "x": 2.508573466476462,
+        "y": 7.41845934379458
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.5901856763925728,
-      "rotationDegrees": 91.58454944949082
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
-  "pointTowardsZones": [],
-  "eventMarkers": [
+  "pointTowardsZones": [
     {
-      "name": "intake",
-      "waypointRelativePos": 1.9832214765100682,
-      "endWaypointRelativePos": 3.0,
-      "command": null
+      "fieldPosition": {
+        "x": 7.8,
+        "y": 6.0
+      },
+      "rotationOffset": 0.0,
+      "minWaypointRelativePos": 1.0209318028359298,
+      "maxWaypointRelativePos": 1.5232950708980293,
+      "name": "Balls"
     }
   ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
@@ -86,13 +85,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 90.21142258103933
+    "rotation": 180.0
   },
   "reversed": false,
-  "folder": "Pappas_Blue_Auto",
+  "folder": "Chuck Paths",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 112.29511708243696
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

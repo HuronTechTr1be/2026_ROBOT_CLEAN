@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.6865836298932395,
-        "y": 0.6835112692763936
+        "x": 3.676,
+        "y": 4.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.9355383529573866,
-        "y": 0.6606738906165355
+        "x": 3.4262829655688907,
+        "y": 4.011891287353862
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.8638598047914816,
-        "y": 2.2765306122448976
+        "x": 2.0,
+        "y": 4.0
       },
       "prevControl": {
-        "x": 2.077824317732095,
-        "y": 2.147227916209254
+        "x": 2.266370106761567,
+        "y": 3.9327876631079484
       },
       "nextControl": null,
       "isLocked": false,
@@ -31,19 +31,7 @@
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "intake",
-      "waypointRelativePos": 0.31208053691275156,
-      "endWaypointRelativePos": 1.0,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "intake"
-        }
-      }
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
@@ -54,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 122.27171436074426
+    "rotation": 91.03815670902263
   },
   "reversed": false,
   "folder": "Pappas_Blue_Auto",

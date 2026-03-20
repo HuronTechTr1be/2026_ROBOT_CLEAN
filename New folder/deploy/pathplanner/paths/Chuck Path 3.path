@@ -1,0 +1,113 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.5383012048192777,
+        "y": 7.378879518072289
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 4.554578939314891,
+        "y": 7.302393860302748
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.439493975903615,
+        "y": 6.613939759036145
+      },
+      "prevControl": {
+        "x": 7.494132530120482,
+        "y": 7.805060240963856
+      },
+      "nextControl": {
+        "x": 7.40442755101838,
+        "y": 5.849491696538011
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.155373493975904,
+        "y": 0.7457590361445796
+      },
+      "prevControl": {
+        "x": 7.920313253012047,
+        "y": 0.9206024096385546
+      },
+      "nextControl": {
+        "x": 6.657981229052486,
+        "y": 0.6320693755906559
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.2816144578313255,
+        "y": 1.0517349397590363
+      },
+      "prevControl": {
+        "x": 2.6908562118157606,
+        "y": 0.5008325786261428
+      },
+      "nextControl": {
+        "x": 1.9974939759036148,
+        "y": 1.4342048192771086
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.680590361445783,
+        "y": 3.805518072289157
+      },
+      "prevControl": {
+        "x": 1.680590361445783,
+        "y": 3.465176452224711
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [
+    {
+      "fieldPosition": {
+        "x": 7.5,
+        "y": 2.0
+      },
+      "rotationOffset": 0.0,
+      "minWaypointRelativePos": 1.115632754342428,
+      "maxWaypointRelativePos": 1.6238213399503896,
+      "name": "balls"
+    }
+  ],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -90.0
+  },
+  "reversed": false,
+  "folder": "Chuck Paths",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "useDefaultConstraints": true
+}

@@ -2,18 +2,13 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
-import java.util.function.DoubleSupplier;
-
 // WPILib Imports
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 // PathPlanner Import
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -26,20 +21,18 @@ import frc.robot.generated.TunerConstants;
 
 // Subsystem Imports
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.TurretSubsystem;
-import frc.robot.subsystems.VisionSubsystem;
+//import frc.robot.subsystems.TurretSubsystem;
+//import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.ShooterSubsystem;
+//import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.PivotSubsystem;
+import frc.robot.subsystems.IntakeBarsSubsystem;
 
-// Command Imports
-import frc.robot.Commands.AlignToTarget;
-import frc.robot.Commands.AutoTurretAlign;
-import frc.robot.Commands.TurretAutoTrack;
 
-// Camera Imports
-import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.cscore.UsbCamera;
-import edu.wpi.first.util.PixelFormat;
+// Command Imports (commented out until subsystems are re-enabled)
+//import frc.robot.Commands.AlignToTarget;
+//import frc.robot.Commands.AutoTurretAlign;
+//import frc.robot.Commands.TurretAutoTrack;
 
 public class RobotContainer {
     
@@ -53,11 +46,12 @@ public class RobotContainer {
     //  2. SUBSYSTEMS
     // =========================================================================
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-    private final VisionSubsystem m_vision = new VisionSubsystem(drivetrain);
-    private final TurretSubsystem m_turret = new TurretSubsystem();
+    private final PivotSubsystem m_pivot = new PivotSubsystem();
+    private final IntakeBarsSubsystem m_intakeBars = new IntakeBarsSubsystem();
     private final IntakeSubsystem m_intake = new IntakeSubsystem();
-    private final ShooterSubsystem m_shooter = new ShooterSubsystem();
-
+    // private final VisionSubsystem m_vision = new VisionSubsystem(drivetrain);
+    // private final TurretSubsystem m_turret = new TurretSubsystem();
+    // private final ShooterSubsystem m_shooter = new ShooterSubsystem();
     // =========================================================================
     //  3. DASHBOARD & FIELD 2D
     // =========================================================================
@@ -79,16 +73,16 @@ public class RobotContainer {
         // =========================================================================
         // These MUST exactly match the spelling in your PathPlanner App!
         
-        NamedCommands.registerCommand("AlignTurretToTag", new AutoTurretAlign(m_turret, m_vision));
+       // NamedCommands.registerCommand("AlignTurretToTag", new AutoTurretAlign(m_turret, m_vision));
 
         // "Leaving To Collect" - Placeholder print command so PathPlanner doesn't crash
         NamedCommands.registerCommand("print message", Commands.print("print message...")); 
 
         // "Collection" - Runs the intake for 2 seconds, then finishes so the next path can start
-        NamedCommands.registerCommand("intake", m_intake.runIntakeCommand(-0.9, -0.9).withTimeout(5.0)); 
+      //  NamedCommands.registerCommand("intake", m_intake.runIntakeCommand(-1.0, -1.0).withTimeout(5.0)); 
 
         // "Return" - Runs the shooter for 2 seconds to score, then finishes
-        NamedCommands.registerCommand("shoot", m_shooter.runShooterRPMCommand(-2450, -.25, 2450).withTimeout(5.0));
+      //  NamedCommands.registerCommand("shoot", m_shooter.runShooterRPMCommand(-2450, -.25, 2450).withTimeout(5.0));
 
 
         // =========================================================================
@@ -116,41 +110,53 @@ public class RobotContainer {
                 return drive
                     .withVelocityX(-m_driverController.getLeftY() * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) * multiplier)
                     .withVelocityY(-m_driverController.getLeftX() * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) * multiplier)
-                    .withRotationalRate(m_driverController.getRightX() * (1.5 * Math.PI) * multiplier);
+                    .withRotationalRate(-m_driverController.getRightX() * (1.5 * Math.PI) * multiplier);
             })
         );
 
-        // Vision Kill Switch (Back Button)
-        m_driverController.back().onTrue(
-            Commands.runOnce(() -> m_vision.disableVisionUpdates(), m_vision)
-        );
+        // Vision Kill Switch (Back Button) — disabled until VisionSubsystem is re-enabled
+        // m_driverController.back().onTrue(
+        //     Commands.runOnce(() -> m_vision.disableVisionUpdates(), m_vision)
+        // );
 
         // Reset Gyro (Start Button)
         m_driverController.start().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
         // Auto-Align to Target (Hold 'A' button)
-        m_driverController.a().whileTrue(new AlignToTarget(drivetrain, m_vision));
+      //  m_operatorController.a().whileTrue(new AlignToTarget(drivetrain, m_vision));
 
         // --- OPERATOR CONTROLS ---
         
         // 1. TURRET CONTROLS
-        new Trigger(DriverStation::isEnabled).onTrue(m_turret.findHomeCommand());
-        m_operatorController.a().onTrue(m_turret.findHomeCommand());
-        m_operatorController.x().whileTrue(new TurretAutoTrack(m_turret, m_vision));
+       // new Trigger(DriverStation::isEnabled).onTrue(m_turret.findHomeCommand());
+      //  m_operatorController.a().onTrue(m_turret.findHomeCommand());
+        //m_operatorController.x().whileTrue(new TurretAutoTrack(m_turret, m_vision));
 
-        m_operatorController.povRight().onTrue(m_turret.goToAngleCommand(45));
-        m_operatorController.povLeft().onTrue(m_turret.goToAngleCommand(-45));
-        m_operatorController.povUp().onTrue(m_turret.goToAngleCommand(0));
+     //   m_operatorController.povRight().onTrue(m_turret.goToAngleCommand(45));
+      //  m_operatorController.povLeft().onTrue(m_turret.goToAngleCommand(-45));
+    //    m_operatorController.povUp().onTrue(m_turret.goToAngleCommand(0));
 
-        // 2. INTAKE (Right Bumper)
-        m_operatorController.rightBumper().whileTrue(m_intake.runIntakeCommand(-.9, -.9));
+        // 4. INTAKE BARS / ROLLER BARS (Driver D-Pad Up/Down)
+        m_driverController.povUp().whileTrue(Commands.run(() -> m_intakeBars.setSpeed(0.3), m_intakeBars).finallyDo(() -> m_intakeBars.stop()));
+        m_driverController.povDown().whileTrue(Commands.run(() -> m_intakeBars.setSpeed(-0.3), m_intakeBars).finallyDo(() -> m_intakeBars.stop()));
+
+        // 5. PIVOT MECHANISM (Driver LB/RB)
+        m_driverController.leftBumper().whileTrue(m_pivot.lowerCommand());
+        m_driverController.rightBumper().whileTrue(m_pivot.raiseCommand());
+
+        // 2. INTAKE BARS SPEED (Operator B = fast, X = slow)
+        m_operatorController.b().whileTrue(m_intakeBars.runFastCommand());
+        m_operatorController.x().whileTrue(m_intakeBars.runSlowCommand());
+
+        // 3. INTAKE (Right Bumper)
+        m_operatorController.rightBumper().whileTrue(m_intake.runIntakeCommand(-1.0, -1.0));
 
         // Reverse Intake (Left Bumper) - Outtakes the object
         m_operatorController.leftBumper().whileTrue(m_intake.runIntakeCommand(0.9, 0.9));  
 
         // 3. SHOOTER (Left Trigger) 
-        m_operatorController.leftTrigger().whileTrue(m_shooter.runShooterRPMCommand(-2450, -.25, 2450));
-        m_operatorController.leftTrigger().whileTrue(m_intake.runIntakeCommand(-.9, -.9));
+       // m_operatorController.leftTrigger().whileTrue(m_shooter.runShooterRPMCommand(-2500, -.25, 2500));
+      //  m_operatorController.leftTrigger().whileTrue(m_intake.runIntakeCommand(-.9, -.9));
     }
 
     // =========================================================================

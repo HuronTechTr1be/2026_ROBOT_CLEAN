@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+/*package frc.robot.subsystems;
 
 // WPILib Imports
 import edu.wpi.first.math.VecBuilder;
@@ -126,7 +126,7 @@ public class VisionSubsystem extends SubsystemBase {
     /**
      * Helper to get the horizontal offset from the Limelight.
      * @return tx value (degrees)
-     */
+     
     public double getTx() {
         return LimelightHelpers.getTX(kLimelightName);
     }
@@ -139,7 +139,7 @@ public class VisionSubsystem extends SubsystemBase {
     /**
      * Helper to check if the Limelight sees a tag.
      * @return true if tag is visible
-     */
+     
     public boolean hasTarget() {
         //return LimelightHelpers.getTV(kLimelightName); 
         return LimelightHelpers.getTV(kLimelightName); 
@@ -155,7 +155,7 @@ public class VisionSubsystem extends SubsystemBase {
     /**
      * Gets the vertical offset (ty) to the target.
      * Useful for calculating distance or shooter hood angle.
-     */
+     
     public double getTY() {
         return LimelightHelpers.getTY(kLimelightName);
     }  
@@ -163,7 +163,7 @@ public class VisionSubsystem extends SubsystemBase {
     /**
      * Disables vision updates safely. 
      * Call this from a button binding if vision goes crazy during a match.
-     */
+     
     public void disableVisionUpdates() {
         m_isEnabled = false;
         System.out.println("WARNING: VISION DISABLED BY DRIVER");
@@ -172,7 +172,7 @@ public class VisionSubsystem extends SubsystemBase {
     /**
      * Gets the distance to the target.
      * JNL 02/11/2026 
-     */
+     
     public double getDistanceToTarget() {
         // 1. Get vertical angle offset from Limelight
         double targetOffsetAngle_Vertical = LimelightHelpers.getTY(kLimelightName);
@@ -198,3 +198,4 @@ public class VisionSubsystem extends SubsystemBase {
         throw new UnsupportedOperationException("Unimplemented method 'getFiducialID'");
     }
 }
+    /* */

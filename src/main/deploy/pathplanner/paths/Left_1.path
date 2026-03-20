@@ -100,7 +100,7 @@
         "y": 5.823
       },
       "prevControl": {
-        "x": 2.48354924578527,
+        "x": 2.4835492457852695,
         "y": 6.4855900621118
       },
       "nextControl": null,
@@ -161,7 +161,7 @@
   "folder": "Pappas_Blue_Auto",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 66.29735404903367
+    "rotation": 51.19746837640911
   },
   "useDefaultConstraints": true
 }
