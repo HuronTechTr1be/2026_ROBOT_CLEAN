@@ -9,8 +9,8 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.SparkBase.ControlType;
-import com.revrobotics.spark.SparkBase.PersistMode;
-import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.PersistMode;
+import com.revrobotics.ResetMode;
 import frc.robot.Constants.PivotConstants;
 
 public class PivotSubsystem extends SubsystemBase {
@@ -23,7 +23,7 @@ public class PivotSubsystem extends SubsystemBase {
 
     // TODO: Tune these positions (in degrees) on the actual robot
     public static final double kPositionUp   = 0.0;  // placeholder
-    public static final double kPositionDown = 90.0; // placeholder
+    public static final double kPositionDown = 75; // placeholder
 
     // TODO: Tune PID gains on the actual robot
     private static final double kP = 0.1;
@@ -31,13 +31,13 @@ public class PivotSubsystem extends SubsystemBase {
     private static final double kD = 0.0;
 
     // Speed used for manual raise/lower (bumpers)
-    private static final double kRaiseSpeed = -1.0;
-    private static final double kLowerSpeed =  1.0;
+    private static final double kRaiseSpeed = -0.3;
+    private static final double kLowerSpeed =  0.3;
 
     public PivotSubsystem() {
         SparkMaxConfig config = new SparkMaxConfig();
         config.idleMode(IdleMode.kBrake);
-        config.smartCurrentLimit(25);
+        config.smartCurrentLimit(40);
 
         config.encoder
             .positionConversionFactor(kDegreesPerRotation)
@@ -54,7 +54,7 @@ public class PivotSubsystem extends SubsystemBase {
 
     /** Go to a target angle in degrees and hold. */
     public void setPosition(double degrees) {
-        m_pid.setReference(degrees, ControlType.kPosition);
+        m_pid.setSetpoint(degrees, ControlType.kPosition);
     }
 
     /** Returns current angle in degrees. */

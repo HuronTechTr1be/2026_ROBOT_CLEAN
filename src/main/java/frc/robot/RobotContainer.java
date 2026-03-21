@@ -141,22 +141,23 @@ public class RobotContainer {
         m_driverController.povDown().whileTrue(Commands.run(() -> m_intakeBars.setSpeed(-0.3), m_intakeBars).finallyDo(() -> m_intakeBars.stop()));
 
         // 5. PIVOT MECHANISM (Driver LB/RB)
-        m_driverController.leftBumper().whileTrue(m_pivot.lowerCommand());
-        m_driverController.rightBumper().whileTrue(m_pivot.raiseCommand());
+        m_operatorController.leftTrigger().whileTrue(m_pivot.lowerCommand());
+        m_operatorController.rightTrigger().whileTrue(m_pivot.raiseCommand());
+        //HERE!!
 
         // 6. PIVOT POSITION (Operator A = down, Y = up) — hold to move, release to hold
-        m_operatorController.a().whileTrue(m_pivot.goDownCommand());
-        m_operatorController.y().whileTrue(m_pivot.goUpCommand());
+        //m_operatorController.a().whileTrue(m_pivot.goDownCommand());
+        //m_operatorController.y().whileTrue(m_pivot.goUpCommand());
 
         // 2. INTAKE BARS SPEED (Operator B = fast, X = slow)
         m_operatorController.b().whileTrue(m_intakeBars.runFastCommand());
         m_operatorController.x().whileTrue(m_intakeBars.runSlowCommand());
 
         // 3. INTAKE (Right Bumper)
-        m_operatorController.rightBumper().whileTrue(m_intake.runIntakeCommand(-1.0, -1.0));
+        m_operatorController.rightBumper().whileTrue(m_intake.runIntakeCommand(-0.1, -0.1));
 
         // Reverse Intake (Left Bumper) - Outtakes the object
-        m_operatorController.leftBumper().whileTrue(m_intake.runIntakeCommand(0.9, 0.9));  
+        m_operatorController.leftBumper().whileTrue(m_intake.runIntakeCommand(0.5, 0.5));  
 
         // 3. SHOOTER (Left Trigger) 
        // m_operatorController.leftTrigger().whileTrue(m_shooter.runShooterRPMCommand(-2500, -.25, 2500));

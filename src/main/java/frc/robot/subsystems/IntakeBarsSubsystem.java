@@ -15,7 +15,7 @@ public class IntakeBarsSubsystem extends SubsystemBase {
     public IntakeBarsSubsystem() {
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        config.CurrentLimits.StatorCurrentLimit = 40;
+        config.CurrentLimits.StatorCurrentLimit =35;
         config.CurrentLimits.StatorCurrentLimitEnable = true;
 
         m_motor.getConfigurator().apply(config);
@@ -36,6 +36,6 @@ public class IntakeBarsSubsystem extends SubsystemBase {
     }
 
     public Command runSlowCommand() {
-        return this.startEnd(() -> setSpeed(0.4), () -> stop()).withName("Bars Slow");
+        return this.startEnd(() -> setSpeed(-0.9), () -> stop()).withName("Bars Slow");
     }
 }

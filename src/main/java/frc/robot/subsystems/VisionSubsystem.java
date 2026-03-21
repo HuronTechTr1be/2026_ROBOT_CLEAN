@@ -194,7 +194,6 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     public boolean getFiducialID(String string) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getFiducialID'");
     }
 }

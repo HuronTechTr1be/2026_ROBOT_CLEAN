@@ -8,7 +8,7 @@ import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 public class IntakeSubsystem extends SubsystemBase {
-
+// remove motors TJJ
     private final TalonFX m_frontRoller = new TalonFX(13);
     private final TalonFX m_backRoller  = new TalonFX(14);
     private final TalonFX m_Roller      = new TalonFX(15);
